@@ -1,3 +1,8 @@
 node_modules
 .env
 c.js
+2server.js
+2passport-config.js
+2index.ejs
+2login.ejs
+2register.ejs

@@ -1,6 +1,7 @@
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
+
 const express = require("express");
 const app = express();
 const bcrypt = require("bcrypt");
@@ -18,11 +19,9 @@ initializePassport(
 
 const users = [];
 
-
 app.set("view-engine", "ejs");
-
-app.use(express.urlencoded({ extended: false })); //We will use this as the information will be coming through form, therefor now we can access the name, email and password inside the server
-
+app.use(express.urlencoded({ extended: false }));
+//We will use this as the information will be coming through form, therefor now we can access the name, email and password inside the server
 app.use(flash());
 app.use(
   session({
@@ -33,28 +32,30 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(methodOverride('_method'))
-
-
+app.use(methodOverride("_method"));
 
 app.get("/", checkAuthenticated, (req, res) => {
   res.render("index.ejs", { name: req.user.name });
 });
+
 app.get("/login", checkNotAuthenticated, (req, res) => {
   res.render("login.ejs");
 });
+
 app.post(
   "/login",
   checkNotAuthenticated,
   passport.authenticate("local", {
-    successRedirect: "/home",
+    successRedirect: "/",
     failureRedirect: "/login",
     failureFlash: true,
   })
 );
+
 app.get("/register", checkNotAuthenticated, (req, res) => {
   res.render("register.ejs");
 });
+
 app.post("/register", checkNotAuthenticated, async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
@@ -68,7 +69,7 @@ app.post("/register", checkNotAuthenticated, async (req, res) => {
   } catch {
     res.redirect("/register");
   }
-  console.log(users);
+  // console.log(users);
 });
 
 app.delete("/logout", (req, res) => {
@@ -87,7 +88,7 @@ function checkNotAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
     return res.redirect("/");
   }
-  return next();
+  next();
 }
 
 app.listen(3000);
